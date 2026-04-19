@@ -1,22 +1,24 @@
-const INTEREST_KR = {
-  buy: '매수', sell: '매도', move: '이사', invest: '투자', rent: '임대차',
-}
+export const maxDuration = 30
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+export default async function handler(req) {
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 })
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return res.status(200).json({ aiAnalysis: 'API 키 없음' })
+  if (!apiKey) {
+    return new Response(JSON.stringify({ aiAnalysis: 'API 키 없음' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
-  const { name, year, month, day, gender, mbti, interest, dayStem, element, mbtiTitle, directionBest, wealthScore, currentRegion, targetRegion, birthHour, yearPillar } = req.body
+  const body = await req.json()
+  const { name, year, month, day, gender, mbti, interest, dayStem, element, mbtiTitle, directionBest, wealthScore, currentRegion, targetRegion } = body
+
+  const INTEREST_KR = { buy: '매수', sell: '매도', move: '이사', invest: '투자', rent: '임대차' }
 
   const prompt = `사주 부동산 운세 분석. 간결하게.
-
 ${name}, ${year}년생 ${gender === 'male' ? '남' : '여'}, 일간 ${dayStem}, 오행 ${element}, MBTI ${mbti}(${mbtiTitle}), 재물운 ${wealthScore}/10
 관심: ${INTEREST_KR[interest] || interest}, 현재: ${currentRegion}, 목표: ${targetRegion}, 방위: ${directionBest}
 
@@ -42,8 +44,14 @@ ${name}, ${year}년생 ${gender === 'male' ? '남' : '여'}, 일간 ${dayStem}, 
     })
     const data = await response.json()
     const aiAnalysis = data.content?.[0]?.text ?? '분석 결과 없음'
-    return res.status(200).json({ aiAnalysis })
+    return new Response(JSON.stringify({ aiAnalysis }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (e) {
-    return res.status(200).json({ aiAnalysis: '오류: ' + e.message })
+    return new Response(JSON.stringify({ aiAnalysis: '오류: ' + e.message }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
