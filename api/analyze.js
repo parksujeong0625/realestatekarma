@@ -1,3 +1,4 @@
+export const maxDuration = 30
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 })
