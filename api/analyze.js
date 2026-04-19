@@ -13,7 +13,9 @@ export default async function handler(req) {
     })
   }
 
-  const body = await req.json()
+const chunks = []
+for await (const chunk of req) chunks.push(chunk)
+const body = JSON.parse(Buffer.concat(chunks).toString())
   const { name, year, month, day, gender, mbti, interest, dayStem, element, mbtiTitle, directionBest, wealthScore, currentRegion, targetRegion } = body
 
   const INTEREST_KR = { buy: '매수', sell: '매도', move: '이사', invest: '투자', rent: '임대차' }
