@@ -108,4 +108,137 @@ export default function Result() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, padding: '24px 20​​​​​​​​​​​​​​​​
+    <div style={{ minHeight: '100vh', background: BG, padding: '24px 20px', fontFamily: "'Noto Serif KR', serif" }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          onClick={() => navigate('/analyze')} style={{
+            background: 'transparent', border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.4)', borderRadius: 50, padding: '8px 18px',
+            fontSize: 13, cursor: 'pointer', marginBottom: 24,
+          }}>← 다시 분석</motion.button>
+
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+          style={{
+            background: `linear-gradient(135deg, ${elData.bg}18, ${elData.bg}30)`,
+            border: `1px solid ${elData.bg}44`, borderRadius: 24,
+            padding: '28px 24px', marginBottom: 16, textAlign: 'center',
+            boxShadow: `0 8px 48px ${elData.bg}22`,
+          }}
+        >
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: `${GOLD}18`, border: `1px solid ${GOLD}33`,
+            borderRadius: 50, padding: '4px 14px', fontSize: 12, color: GOLD, marginBottom: 14,
+          }}>
+            {elData.emoji} {elData.name} · {profile.mbtiEmoji} {form.mbti} · {INTEREST_LABEL[form.interest]}
+          </div>
+          <h2 style={{ color: '#fff', fontSize: 24, fontWeight: 900, marginBottom: 4 }}>
+            {profile.name}님의 부동산 운세
+          </h2>
+          <div style={{ color: elData.bg, fontSize: 15, marginBottom: 16 }}>
+            일간 {profile.dayStem}일 · {profile.yearPillar.stem}{profile.yearPillar.branch}년생 · {profile.mbtiTitle}
+          </div>
+          <WealthBar score={profile.wealthScore} />
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          style={{
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+            borderRadius: 20, padding: '24px', marginBottom: 16,
+          }}
+        >
+          <h3 style={{ color: GOLD, fontSize: 15, fontWeight: 800, marginBottom: 20 }}>🧭 나에게 맞는 방위</h3>
+          <CompassRose best={profile.directionData.best} good={profile.directionData.good} avoid={profile.directionData.avoid} />
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 18, flexWrap: 'wrap' }}>
+            {[
+              { color: '#22c55e', label: `최적: ${profile.directionData.best.join(' · ')}` },
+              { color: GOLD, label: `좋음: ${profile.directionData.good.join(' · ')}` },
+              { color: '#ef4444', label: `피함: ${profile.directionData.avoid.join(' · ')}` },
+            ].map((l, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 3, background: l.color }} />
+                <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+          style={{
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+            borderRadius: 20, padding: '22px', marginBottom: 16,
+          }}
+        >
+          <h3 style={{ color: GOLD, fontSize: 15, fontWeight: 800, marginBottom: 16 }}>🗺️ 오행으로 보는 맞는 지역·주거</h3>
+          {[
+            { icon: '📍', label: '맞는 지역', value: profile.directionData.region },
+            { icon: '🌆', label: '지역 성향', value: profile.directionData.regionDesc },
+            { icon: '🏠', label: '추천 주거 유형', value: profile.directionData.houseType },
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex', gap: 12, padding: '12px 0',
+              borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+            }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{item.icon}</span>
+              <div>
+                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 3 }}>{item.label}</div>
+                <div style={{ color: '#fff', fontSize: 14, lineHeight: 1.5 }}>{item.value}</div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          style={{
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+            borderRadius: 20, padding: '22px', marginBottom: 16,
+          }}
+        >
+          <h3 style={{ color: GOLD, fontSize: 15, fontWeight: 800, marginBottom: 16 }}>🔮 AI 사주 부동산 분석</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {lines.length > 0 ? lines.map((line, i) => {
+              const isHeader = /^[0-9]+\.|^[🏠💸📦📈🔑🗓️📅⚠️✅🌟💡🔮]/.test(line)
+              return (
+                <div key={i} style={{
+                  background: isHeader ? `${GOLD}10` : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${isHeader ? GOLD + '22' : 'rgba(255,255,255,0.05)'}`,
+                  borderRadius: 12, padding: '12px 14px',
+                  color: isHeader ? GOLD : 'rgba(255,255,255,0.8)',
+                  fontSize: isHeader ? 14 : 13.5, fontWeight: isHeader ? 700 : 400, lineHeight: 1.75,
+                }}>{line}</div>
+              )
+            }) : <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>분석 결과가 없어요.</p>}
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+          style={{
+            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+            borderRadius: 14, padding: '14px 16px', marginBottom: 16,
+          }}
+        >
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, lineHeight: 1.7 }}>
+            ⚠️ 본 분석은 사주명리학과 MBTI를 기반으로 한 참고용 콘텐츠입니다. 실제 부동산 거래·투자 결정은 전문가와 상담하세요.
+          </p>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}
+          style={{ display: 'flex', gap: 10, marginBottom: 48 }}
+        >
+          <button onClick={() => navigate('/analyze')} style={{
+            flex: 1, padding: '15px', borderRadius: 50,
+            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+            color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700,
+          }}>🔄 재분석</button>
+          <button onClick={handleCopy} style={{
+            flex: 1, padding: '15px', borderRadius: 50,
+            background: copied ? 'rgba(34,197,94,0.2)' : `${GOLD}22`,
+            border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : GOLD + '44'}`,
+            color: copied ? '#86efac' : GOLD,
+            cursor: 'pointer', fontSize: 14, fontWeight: 700, transition: 'all 0.2s',
+          }}>{copied ? '✅ 복사됨!' : '🔗 공유'}</button>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
