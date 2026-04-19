@@ -1,4 +1,4 @@
-export const config = { runtime: 'edge' }
+
 
 const INTEREST_KR = {
   buy: '매수(구매) 검토 중',
